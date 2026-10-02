@@ -1,0 +1,45 @@
+# ~/.continue/config.yaml  (Windows: %USERPROFILE%\.continue\config.yaml)
+#
+# Continue (VS Code) → the Hopeworks vLLM server on the R570.
+# Replace the two <...> placeholders. Keep the /v1 on the URL.
+#
+# The `model:` ids must match what the server reports:
+#   curl -s http://<R570_IP>:8000/v1/models -H "Authorization: Bearer <SITE_KEY>" | jq -r '.data[].id'
+# Only ONE of the two models is live at a time (Module 5). Pick the live one
+# in Continue's model dropdown; the other errors until you switch the server.
+
+name: Hopeworks Local LLM
+version: 0.0.1
+schema: v1
+
+models:
+  - name: Qwen2.5-Coder-7B (Hopeworks R570)
+    provider: openai
+    model: Qwen/Qwen2.5-Coder-7B-Instruct
+    apiBase: http://<R570_IP>:8000/v1
+    apiKey: <SITE_KEY>
+    roles:
+      - chat
+      - edit
+      - apply
+    capabilities:
+      - tool_use          # agent mode; needs the server's --tool-call-parser hermes
+    defaultCompletionOptions:
+      contextLength: 32768   # must not exceed the server's MAX_MODEL_LEN
+      maxTokens: 2048
+      temperature: 0.2
+
+  - name: Qwen2.5-7B chat (Hopeworks R570)
+    provider: openai
+    model: Qwen/Qwen2.5-7B-Instruct
+    apiBase: http://<R570_IP>:8000/v1
+    apiKey: <SITE_KEY>
+    roles:
+      - chat
+    defaultCompletionOptions:
+      contextLength: 32768
+      maxTokens: 2048
+
+rules:
+  - Prefer short, complete answers with runnable code.
+  - This is a 7B model with no internet access; say so when unsure instead of guessing.

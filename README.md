@@ -15,6 +15,7 @@ By the end of the workshop, each student group will have:
 2. Two open-source models (Qwen2.5 1.5B and 7B) downloaded and served over an OpenAI-compatible API **(Module 2)**
 3. Command-line fluency: querying, scripting, and monitoring the model server **(Module 3)**
 4. A streaming web chatbot — with personas and live model discovery — talking to their server **(Module 4)**
+5. *(Post-workshop project)* vLLM as a permanent, key-protected service on the site's R570 server, with a model-switching API they wrote **(Module 5)**
 
 ## Who this is for
 
@@ -56,6 +57,7 @@ students will meet on the job.
 | 2 | [Models & Serving](modules/module-2-models-and-serving.md) | ~2 h | Download models, VRAM math, serve to the LAN |
 | 3 | [The CLI Toolkit](modules/module-3-cli-toolkit.md) | ~2 h | curl + jq, `vllm chat`, cache management, monitoring |
 | 4 | [Build a Chatbot](modules/module-4-chatbot.md) | ~3–4 h | FastAPI backend + web frontend, streaming chat |
+| 5 | [A Permanent Server](modules/module-5-permanent-server.md) | ~3 h | *Post-workshop:* systemd, API key, a model-switching API on the R570's L4 |
 
 Each module is **standalone and self-paced**: it opens with a prerequisites
 "state check" so a student can verify their machine is ready, and can be run
@@ -69,10 +71,14 @@ llm-workshop/
 ├── README.md                  ← you are here
 ├── pre-reading-ollama-vs-vllm.md ← 30-min background read (assign before Module 1)
 ├── cheatsheet.md              ← 1-page command reference (print this)
-├── modules/                   ← the four student-facing tutorials
+├── guides/
+│   ├── intern-dev-setup.md    ← runbook: laptop + R570 server + VS Code assistant (new interns start here)
+│   └── continue-config.yaml   ← VS Code Continue config pointing at the server
+├── modules/                   ← the five student-facing tutorials (5 is post-workshop)
 ├── code/
 │   ├── starter/               ← skeletons with TODOs (students work here)
 │   └── finished/              ← complete reference implementations
+│       └── model-manager/     ← Module 5: switcher API + systemd/sudoers deploy files
 ├── appendices/
 │   ├── a-hardware-profiles.md ← per-site GPU specifics (Kensington/Camden/Newark)
 │   ├── b-gated-models.md      ← stretch goal: HuggingFace tokens & Llama
@@ -104,6 +110,11 @@ The workshop targets Hopeworks' GPU workstations (see
 
 All model choices in this curriculum fit within **48 GB** — the smallest
 target GPU — so the same materials work at every site unchanged.
+
+The Camden and Kensington racks also hold a **PowerEdge R570 with an NVIDIA
+L4 (24 GB)**. It is not a workshop target, but it is the home of the
+post-workshop project (Module 5) and of the permanent endpoint new interns
+connect to via the [Intern Dev Setup guide](guides/intern-dev-setup.md).
 
 **Per-student dev machines are a Module 4 prerequisite:** each student needs
 their own laptop/desktop with a browser, Python 3.10+, Git (Git Bash on

@@ -1,0 +1,6 @@
+# Only needed if you run the manager OUTSIDE the ~/vllm-lab venv --
+# vLLM already pulls all four of these in.
+fastapi
+uvicorn[standard]
+httpx
+huggingface_hub

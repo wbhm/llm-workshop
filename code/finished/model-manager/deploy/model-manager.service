@@ -1,0 +1,31 @@
+# /etc/systemd/system/model-manager.service
+#
+# The control-plane API from Module 5. Runs inside the same venv as vLLM
+# (fastapi/uvicorn/httpx/huggingface_hub all ship with vLLM).
+#
+# Install:
+#   sudo cp model-manager.service /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now model-manager
+
+[Unit]
+Description=Hopeworks model manager (switches the vllm unit's model)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=hopeworks
+Group=hopeworks
+WorkingDirectory=/home/hopeworks/model-manager
+# Same key as vLLM, so clients need to remember only one secret.
+EnvironmentFile=/etc/vllm/vllm.env
+Environment=VLLM_ENV_FILE=/etc/vllm/vllm.env
+Environment=VLLM_UNIT=vllm
+Environment=VLLM_URL=http://localhost:8000
+# MANAGER_API_KEY is derived from VLLM_API_KEY via the ExecStart shell below.
+ExecStart=/bin/sh -c 'MANAGER_API_KEY="$VLLM_API_KEY" exec /home/hopeworks/vllm-lab/.venv/bin/uvicorn manager:app --host 0.0.0.0 --port 8001'
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

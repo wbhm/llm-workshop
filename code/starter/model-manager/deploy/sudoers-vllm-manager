@@ -1,0 +1,10 @@
+# /etc/sudoers.d/vllm-manager
+#
+# Lets the model manager (running as hopeworks) restart ONLY the vllm unit,
+# with no password. Nothing else gains root.
+#
+# Install (visudo validates syntax -- a broken sudoers file locks you out):
+#   sudo visudo -c -f sudoers-vllm-manager
+#   sudo install -m 0440 sudoers-vllm-manager /etc/sudoers.d/vllm-manager
+
+hopeworks ALL=(root) NOPASSWD: /usr/bin/systemctl restart vllm, /usr/bin/systemctl start vllm, /usr/bin/systemctl stop vllm

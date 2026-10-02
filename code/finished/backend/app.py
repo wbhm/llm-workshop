@@ -22,8 +22,10 @@ from pydantic import BaseModel
 VLLM_BASE_URL = os.environ.get("VLLM_BASE_URL", "http://localhost:8000/v1")
 
 # vLLM speaks the OpenAI API, so we use the official OpenAI client library.
-# The api_key is required by the library but ignored by our server.
-client = AsyncOpenAI(base_url=VLLM_BASE_URL, api_key="not-needed")
+# Workshop workstations ignore the key; a server started with --api-key
+# (the R570 in Module 5) requires it. Default keeps the workshop unchanged.
+VLLM_API_KEY = os.environ.get("VLLM_API_KEY", "not-needed")
+client = AsyncOpenAI(base_url=VLLM_BASE_URL, api_key=VLLM_API_KEY)
 
 app = FastAPI(title="Hopeworks Chatbot")
 

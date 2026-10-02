@@ -1,0 +1,35 @@
+# /etc/systemd/system/vllm.service
+#
+# vLLM as a permanent service: starts at boot, restarts on crash, and
+# re-reads /etc/vllm/vllm.env every time it (re)starts -- which is how the
+# model manager switches models.
+#
+# Install:
+#   sudo cp vllm.service /etc/systemd/system/vllm.service
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now vllm
+#   journalctl -u vllm -f        # watch the startup logs
+
+[Unit]
+Description=vLLM OpenAI-compatible server
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=hopeworks
+Group=hopeworks
+WorkingDirectory=/home/hopeworks/vllm-lab
+EnvironmentFile=/etc/vllm/vllm.env
+# systemd expands ${VAR} from the EnvironmentFile. No shell involved.
+ExecStart=/home/hopeworks/vllm-lab/.venv/bin/vllm serve ${MODEL} \
+    --host 0.0.0.0 --port 8000 \
+    --max-model-len ${MAX_MODEL_LEN} \
+    --api-key ${VLLM_API_KEY} \
+    --enable-auto-tool-choice --tool-call-parser hermes
+# vLLM needs a moment to free the GPU on stop; a 7B load takes 1-3 min on start.
+TimeoutStopSec=60
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

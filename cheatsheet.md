@@ -106,6 +106,22 @@ cd frontend-react && npm install && npm run dev     # → http://localhost:5173
 | Is it DNS? | `ping 1.1.1.1` works but names don't → yes, it's DNS |
 | What's on port 8000? | `pkill -f "vllm serve"` to clear a stale server |
 
+## R570 server (Module 5 / intern setup) — needs the site key
+
+```bash
+export AUTH="Authorization: Bearer <SITE_KEY>"
+curl -s http://<R570_IP>:8000/v1/models -H "$AUTH" | jq -r '.data[].id'   # what's live
+curl -s http://<R570_IP>:8001/models -H "$AUTH" | jq                      # what's on disk
+curl -s http://<R570_IP>:8001/status -H "$AUTH" | jq                      # unit + ready?
+curl -s -X POST http://<R570_IP>:8001/switch -H "$AUTH" \
+  -H "Content-Type: application/json" -d '{"model":"Qwen/Qwen2.5-7B-Instruct","wait":true}'
+# on the server itself:
+systemctl status vllm model-manager      journalctl -u vllm -n 100
+sudo systemctl restart vllm              nano /etc/vllm/vllm.env
+# chatbot backend against it:
+VLLM_BASE_URL=http://<R570_IP>:8000/v1 VLLM_API_KEY=<SITE_KEY> uvicorn app:app --port 8080
+```
+
 **Debug order (Module 4):** browser → backend → vLLM. Find which arrow is
 broken: dev tools (F12) Network tab for the first arrow, `curl :8080/api/models`
 for the second, `curl :8000/v1/models` for the third.

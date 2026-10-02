@@ -101,6 +101,27 @@ The React track realistically needs its own follow-on session for students
 who want it; don't try to run both tracks to completion simultaneously —
 point advanced students at §8 and let them self-pace.
 
+### Module 5 — Permanent Server (3h, post-workshop project, 1–2 interns)
+
+Not a cohort session: assign it to a pair who finished Module 4 and want
+the resume line. Needs the R570's `hopeworks` password and a site API key
+you choose (any long random string; `openssl rand -hex 24`). Confirm with
+IT that **8001** is open alongside 8000 before they start.
+
+| Time | What | Mode |
+|---|---|---|
+| 0:00 | §1–2: process vs service; download both models (start early, read on) | Solo |
+| 0:30 | §3: env file + unit + key; reboot test | Solo |
+| 1:00 | §4: switch by hand twice | Solo |
+| 1:20 | §5: TODOs 1–3 against the running unit | Solo (you review TODO 3 before §6) |
+| 2:20 | §6–7: sudoers + manager as a service; final reboot test | Solo |
+| 2:50 | Hand-off: they walk you through `guides/intern-dev-setup.md` §5 on a fresh laptop | Review |
+
+Biggest risk: a typo in the sudoers file. The module runs `visudo -c` first
+every time; if sudo is already broken, `pkexec visudo` or root console.
+Second risk: a stray tmux `vllm serve` holding the GPU when the unit starts
+— `nvidia-smi` shows it.
+
 ## Failure-mode playbook (cost-ranked)
 
 | Failure | Prevention | In-the-moment fix |
@@ -184,6 +205,25 @@ tickets or opening recaps. Answers:
    API key. Zero code changes — that's the OpenAI-compatible API paying
    off.
 
+### Module 5
+
+1. A switch is in progress (or the restart failed). Not wrong by itself:
+   the env file is *intent*, `/v1/models` is *reality*, and they disagree
+   for 1–3 minutes after every switch. `unit: failed` is the signal that
+   something *is* wrong.
+2. Downloads are slow (minutes to an hour), network-dependent, and eat
+   disk; a request that might take an hour is a bad HTTP request. Cost of
+   refusing: one manual `hf download` step. Cost of auto-downloading: hung
+   requests, surprise disk usage, no way to say no to a 70B.
+3. `-n` = non-interactive: fail instead of prompting for a password. It
+   succeeds only for the exact commands listed in
+   `/etc/sudoers.d/vllm-manager` (`systemctl restart/start/stop vllm`),
+   which is why `apt update` is refused.
+4. Continue's selected model 404s until the user picks the other entry
+   (the model id is in every request). The chatbot's dropdown is stale
+   until refreshed (it reads `/api/models` once at load). `/status` tells
+   both users what's live and whether the restart has finished.
+
 ## After the workshop
 
 Natural follow-ons, in increasing ambition:
@@ -192,6 +232,8 @@ Natural follow-ons, in increasing ambition:
 2. React track (§8) for students who did the beginner track.
 3. Appendix B (Llama + tokens) as homework.
 4. **The real prize:** a student team installs vLLM on the site's PowerEdge
-   R570 (L4 GPU) as a *permanent* Hopeworks LLM endpoint — the workshop
-   materials are literally the runbook, and "deployed an internal LLM
-   service" is a resume line.
+   R570 (L4 GPU) as a *permanent* Hopeworks LLM endpoint — that is
+   [Module 5](../modules/module-5-permanent-server.md), and "deployed an
+   internal LLM service" is a resume line. Once it's up, every new intern
+   onboards against it with the
+   [Intern Dev Setup guide](../guides/intern-dev-setup.md).

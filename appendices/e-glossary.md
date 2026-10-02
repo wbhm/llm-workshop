@@ -19,6 +19,11 @@ that runs in the browser (HTML/JS or React).
 into before the model sees it (who said what, where the system prompt goes).
 vLLM applies it for you on the `/v1/chat/completions` endpoint.
 
+**Continue** — an open-source VS Code / JetBrains extension that puts a chat,
+edit and agent assistant in the editor, pointed at any OpenAI-compatible
+server by a YAML config file. The workshop's chosen coding assistant
+(intern setup guide §6).
+
 **Context length** — the maximum number of tokens (prompt + answer,
 whole conversation) a request may use. Set per-server in this workshop with
 `--max-model-len`.
@@ -37,6 +42,10 @@ served from one place can call an API served from another.
 **Driver** — the operating-system software that lets programs talk to a
 piece of hardware. `nvidia-smi` working is the proof the GPU driver is
 alive.
+
+**Environment file** — a plain text file of `KEY=value` lines that a
+systemd unit reads at start. Keeps *settings* (which model, which key)
+separate from the *service definition*. Module 5's `/etc/vllm/vllm.env`.
 
 **Endpoint** — one specific URL an API answers on, e.g. `/v1/models` or
 `/v1/chat/completions`.
@@ -96,6 +105,14 @@ blank lines. How streamed answers travel in Modules 3 and 4.
 **Streaming** — sending the answer a few tokens at a time as they're
 generated, instead of all at once at the end. What makes chat UIs feel
 alive.
+
+**sudoers** — the file(s) that say which user may run which commands as
+root, and whether a password is needed. Module 5 adds one rule so the
+model manager can restart exactly one service.
+
+**systemd** — Ubuntu's service manager: starts programs at boot, restarts
+them on crash, collects their logs (`journalctl`). A program described by a
+*unit file* and controlled with `systemctl`. Module 5 turns vLLM into one.
 
 **System prompt** — a hidden instruction placed *first* in the
 conversation that steers the model's behavior for every following turn.
